@@ -1,8 +1,9 @@
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronDown } from "lucide-react";
 import { Lesson } from "./Lesson";
-import { useAppDispatch, useAppSelector } from "../store";
-import { play } from "../store/slices/player";
+import { useStore } from "../zustand-store";
+// import { useAppDispatch, useAppSelector } from "../store";
+// import { play } from "../store/slices/player";
 
 interface ModuleProps {
   title: string;
@@ -11,20 +12,31 @@ interface ModuleProps {
 }
 
 export function Module({ title, amountOfLessons, moduleIndex }: ModuleProps) {
-  const dispatch = useAppDispatch();
+  /* ------ REDUX MODE
+    const dispatch = useAppDispatch();
 
-  const { currentLessonIndex, currentModuleIndex } = useAppSelector((state) => {
-    const { currentLessonIndex, currentModuleIndex } = state.player;
+    const { currentLessonIndex, currentModuleIndex } = useAppSelector((state) => {
+      const { currentLessonIndex, currentModuleIndex } = state.player;
 
-    return { currentLessonIndex, currentModuleIndex };
-  });
+      return { currentLessonIndex, currentModuleIndex };
+    });
 
-  function handlePlayLesson(moduleIndex: number, lessonIndex: number) {
-    dispatch(play([moduleIndex, lessonIndex]));
-  }
+    function handlePlayLesson(moduleIndex: number, lessonIndex: number) {
+      dispatch(play([moduleIndex, lessonIndex]));
+    }
 
-  const lessons = useAppSelector(
-    (state) => state.player.course?.modules[moduleIndex].lessons
+    const lessons = useAppSelector(
+      (state) => state.player.course?.modules[moduleIndex].lessons
+    );
+  */
+
+  const { lessons, currentLessonIndex, currentModuleIndex, play } = useStore(
+    (state) => ({
+      lessons: state.course?.modules[moduleIndex].lessons,
+      currentLessonIndex: state.currentLessonIndex,
+      currentModuleIndex: state.currentModuleIndex,
+      play: state.play,
+    })
   );
 
   return (
@@ -55,7 +67,7 @@ export function Module({ title, amountOfLessons, moduleIndex }: ModuleProps) {
                   key={lesson.id}
                   title={lesson.title}
                   duration={lesson.duration}
-                  onPlay={() => handlePlayLesson(moduleIndex, lessonIndex)}
+                  onPlay={() => play([moduleIndex, lessonIndex])}
                   isCurrent={isCurrent}
                 />
               );
